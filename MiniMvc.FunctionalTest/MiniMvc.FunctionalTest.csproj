@@ -9,4 +9,16 @@
     <ProjectReference Include="..\MiniMvc\MiniMvc.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="static\css\styles.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="static\html\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="static\js\index.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
