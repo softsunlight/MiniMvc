@@ -136,6 +136,32 @@ namespace MiniMvc
                         httpResponse.StatusCode = 400;
                         httpResponse.StatusMessage = "Bad Request";
                     }
+                    //判断是否是CORS预检请求
+                    if (httpRequest.RequestMethod == "OPTIONS" && (httpRequest.Headers.ContainsKey("Access-Control-Request-Headers") || httpRequest.Headers.ContainsKey("Access-Control-Request-Method")))
+                    {
+                        if (httpResponse.Headers == null)
+                        {
+                            httpResponse.Headers = new Dictionary<string, string>();
+                        }
+                        httpResponse.Headers["Access-Control-Allow-Origin"] = "*";
+                        httpResponse.Headers["Access-Control-Allow-Methods"] = "GET,POST";
+                        httpResponse.Headers["Access-Control-Allow-Headers"] = httpRequest.Headers["Access-Control-Request-Headers"];
+                        httpResponse.StatusCode = 204;
+                        httpResponse.StatusMessage = "No Content";
+                        return;
+                    }
+                    if (httpRequest.RequestPath == "/cors")
+                    {
+                        if (httpResponse.Headers == null)
+                        {
+                            httpResponse.Headers = new Dictionary<string, string>();
+                        }
+                        httpResponse.Headers["Content-Type"] = "application/json";
+                        httpResponse.Body = Encoding.UTF8.GetBytes("{}");
+                        httpResponse.StatusCode = 200;
+                        httpResponse.StatusMessage = "OK";
+                        return;
+                    }
                     string staticDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "static");
                     string filePath = "";
                     httpResponse.Headers = new Dictionary<string, string>();
@@ -212,7 +238,7 @@ namespace MiniMvc
                     request.RequestMethod = startLineArr[0];
                     request.RequestPath = startLineArr[1].Split('?')[0];
                     request.HttpVersion = startLineArr[2];
-                    MatchCollection requestHeaderMatches = Regex.Matches(requestHeader, @"(?is)(?<name>\S*):(?<value>\S*)");
+                    MatchCollection requestHeaderMatches = Regex.Matches(requestHeader, @"(?is)(?<name>\S*)\s*:\s*(?<value>\S+)");
                     Dictionary<string, string> headers = new Dictionary<string, string>();
                     foreach (Match m in requestHeaderMatches)
                     {
@@ -221,6 +247,7 @@ namespace MiniMvc
                             headers[m.Groups["name"].Value] = m.Groups["value"].Value;
                         }
                     }
+                    request.Headers = headers;
                 }
                 if (spaceLineEndIndex + 1 < requestDatas.Length)
                 {
