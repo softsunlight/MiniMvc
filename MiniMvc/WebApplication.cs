@@ -157,6 +157,7 @@ namespace MiniMvc
                             httpResponse.Headers = new Dictionary<string, string>();
                         }
                         httpResponse.Headers["Content-Type"] = "application/json";
+                        httpResponse.Headers["Access-Control-Allow-Origin"] = "*";
                         httpResponse.Body = Encoding.UTF8.GetBytes("{}");
                         httpResponse.StatusCode = 200;
                         httpResponse.StatusMessage = "OK";
